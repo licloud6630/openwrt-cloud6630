@@ -1,0 +1,309 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Freescale Layerscape-1043A family SoC.
+ *
+ * Copyright 2014-2015 Freescale Semiconductor, Inc.
+ * Copyright 2018 NXP
+ *
+ * Mingkai Hu <Mingkai.hu@freescale.com>
+ */
+
+/dts-v1/;
+#include "fsl-ls1043a.dtsi"
+
+/ {
+	model = "LS1043A FUTURE03 Board";
+	compatible = "fsl,ls1043a-future03", "fsl,ls1043a";
+
+	aliases {
+		serial0 = &duart0;
+		serial1 = &duart1;
+		serial2 = &duart2;
+		serial3 = &duart3;
+	};
+
+	chosen {
+		stdout-path = "console=ttyS0,115200 root=/dev/mmcblk0p2 noinitrd rw \
+						rootfstype=squashfs rootdelay=5 earlycon=uart8250,mmio,0x21c0500 \
+						pci=nomsi device=future03";
+	};
+};
+
+&esdhc {
+	mmc-hs200-1_8v;
+	sd-uhs-sdr104;
+	sd-uhs-sdr50;
+	sd-uhs-sdr25;
+	sd-uhs-sdr12;
+};
+
+&i2c0 {
+	status = "okay";
+	gpio20: gpio@20 {
+		compatible = "nxp,pca9555";
+		reg = <0x20>;
+		pinctrl-names = "default";
+		gpio-controller;
+		#gpio-cells = <0x02>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	g788@4c {
+		compatible = "gmt,g788";
+		reg = <0x4c>;
+	};
+};
+
+&i2c2 {
+	status = "okay";
+	rtc@51 {
+		compatible = "nxp,pcf8563";
+		reg = <0x51>;
+	};
+};
+
+&leds {
+		compatible = "gpio-leds";
+
+		led@1 {
+			gpios = <&gpio1 23 1>;
+			label = "led_cloud";
+			default-state = "off";
+		};
+
+		led@2 {
+			gpios = <&gpio1 24 1>;
+			label = "led_run";
+			default-state = "off";
+		};
+
+		led@3 {
+			gpios = <&gpio1 27 1>;
+			label = "led_wifi1";
+			default-state = "off";
+		};
+
+		led@4 {
+			gpios = <&gpio1 28 1>;
+			label = "led_wifi2";
+			default-state = "off";
+		};
+
+		led@5 {
+			gpios = <&gpio1 29 1>;
+			label = "led_4g";
+			default-state = "off";
+		};
+
+		led@6 {
+			gpios = <&gpio1 30 1>;
+			label = "led_5g";
+			default-state = "off";
+		};
+
+		lte_2 {
+			gpios = <&gpio20 10 1>;
+			label = "lte_2";
+			default-state = "off";
+		};
+
+		lte_1 {
+			gpios = <&gpio20 11 1>;
+			label = "lte_1";
+			default-state = "off";
+		};
+
+		lte_0 {
+			gpios = <&gpio20 12 1>;
+			label = "lte_0";
+			default-state = "off";
+		};
+	};
+
+&keys{
+	reset {
+		label = "reset";
+		gpios = <&gpio1 10 1>;
+		linux,code = <0x198>;
+	};
+};
+
+&ifc {
+	status = "disabled";
+	#address-cells = <2>;
+	#size-cells = <1>;
+	/* NOR, NAND Flashes and FPGA on board */
+	ranges = <0x0 0x0 0x0 0x60000000 0x08000000
+		  0x1 0x0 0x0 0x7e800000 0x00010000
+		  0x2 0x0 0x0 0x7fb00000 0x00000100>;
+
+		nor@0,0 {
+			compatible = "cfi-flash";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x0 0x0 0x8000000>;
+			big-endian;
+			bank-width = <2>;
+			device-width = <1>;
+		};
+
+		nand@1,0 {
+			compatible = "fsl,ifc-nand";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x1 0x0 0x10000>;
+		};
+
+		cpld: board-control@2,0 {
+			compatible = "fsl,ls1043ardb-cpld";
+			reg = <0x2 0x0 0x0000100>;
+		};
+};
+
+&dspi0 {
+	bus-num = <0>;
+	status = "disabled";
+
+	flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "n25q128a13", "jedec,spi-nor";  /* 16MB */
+		reg = <0>;
+		spi-max-frequency = <1000000>; /* input clock */
+	};
+
+	slic@2 {
+		compatible = "maxim,ds26522";
+		reg = <2>;
+		spi-max-frequency = <2000000>;
+		fsl,spi-cs-sck-delay = <100>;
+		fsl,spi-sck-cs-delay = <50>;
+	};
+
+	slic@3 {
+		compatible = "maxim,ds26522";
+		reg = <3>;
+		spi-max-frequency = <2000000>;
+		fsl,spi-cs-sck-delay = <100>;
+		fsl,spi-sck-cs-delay = <50>;
+	};
+};
+
+&duart0 {
+	status = "okay";
+};
+
+&duart1 {
+	status = "okay";
+};
+
+&qspi {
+	status = "okay";
+	w25q64@0 {
+		compatible = "Winbond,w25q64fw";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		spi-max-frequency = <50000000>;
+		reg = <0x00>;
+		spi-rx-bus-width = <4>;
+		spi-tx-bus-width = <4>;
+	};
+};
+
+#include "fsl-ls1043-post.dtsi"
+
+&fman0 {
+
+	ethernet@e0000 {
+		phy-handle = <&qsgmii_phy1>;
+		phy-connection-type = "qsgmii";
+	};
+
+	ethernet@e2000 {
+		phy-handle = <&qsgmii_phy2>;
+		phy-connection-type = "qsgmii";
+	};
+
+	ethernet@e4000 {
+		phy-handle = <&rgmii_phy1>;
+		phy-connection-type = "rgmii";
+	};
+
+	ethernet@e6000 {
+		phy-handle = <&rgmii_phy2>;
+		phy-connection-type = "rgmii";
+	};
+
+	ethernet@e8000 {
+		phy-handle = <&qsgmii_phy3>;
+		phy-connection-type = "qsgmii";
+	};
+
+	ethernet@ea000 { 
+		phy-handle = <&qsgmii_phy4>;
+		phy-connection-type = "qsgmii";
+	};
+
+	mdio@fc000 {
+		rgmii_phy1: ethernet-phy@1 {
+			reg = <0x1>;
+		};
+
+		rgmii_phy2: ethernet-phy@3 {
+			reg = <0x3>;
+		};
+	};
+
+	mdio@fd000 {
+		qsgmii_phy1: ethernet-phy@4 {
+			reg = <0x4>;
+			max-speed = <1000>;
+		};
+
+		qsgmii_phy2: ethernet-phy@5 {
+			reg = <0x5>;
+			max-speed = <1000>;
+		};
+
+		qsgmii_phy3: ethernet-phy@6 {
+			reg = <0x6>;
+			max-speed = <1000>;
+		};
+
+		qsgmii_phy4: ethernet-phy@7 {
+			reg = <0x7>;
+			max-speed = <1000>;
+		};
+	};
+};
+
+&uqe {
+	ucc_hdlc: ucc@2000 {
+		compatible = "fsl,ucc-hdlc";
+		rx-clock-name = "clk8";
+		tx-clock-name = "clk9";
+		fsl,rx-sync-clock = "rsync_pin";
+		fsl,tx-sync-clock = "tsync_pin";
+		fsl,tx-timeslot-mask = <0xfffffffe>;
+		fsl,rx-timeslot-mask = <0xfffffffe>;
+		fsl,tdm-framer-type = "e1";
+		fsl,tdm-id = <0>;
+		fsl,siram-entry-id = <0>;
+		fsl,tdm-interface;
+	};
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&usb2 {
+	status = "okay";
+};
+

@@ -79,6 +79,10 @@ platform_copy_config() {
 	fsl,ls1046a-frwy-sdboot | \
 	fsl,ls1046a-rdb-sdboot | \
 	fsl,ls1088a-rdb-sdboot | \
+	fsl,ls1043a-ag1002at | \
+	fsl,ls1043a-ag1002a | \
+	fsl,ls1043a-ag104a | \
+	fsl,ls1043a-future03 | \
 	fsl,lx2160a-rdb-sdboot)
 		platform_copy_config_sdboot
 		;;
@@ -110,6 +114,10 @@ platform_check_image() {
 	fsl,ls1088a-rdb-sdboot | \
 	fsl,ls2088a-rdb | \
 	fsl,lx2160a-rdb | \
+	fsl,ls1043a-ag1002at | \
+	fsl,ls1043a-ag1002a | \
+	fsl,ls1043a-ag104a | \
+	fsl,ls1043a-future03 | \
 	fsl,lx2160a-rdb-sdboot)
 		return 0
 		;;
@@ -152,6 +160,10 @@ platform_do_upgrade() {
 	fsl,ls1046a-frwy-sdboot | \
 	fsl,ls1046a-rdb-sdboot | \
 	fsl,ls1088a-rdb-sdboot | \
+	fsl,ls1043a-ag1002at | \
+	fsl,ls1043a-ag1002a | \
+	fsl,ls1043a-ag104a | \
+	fsl,ls1043a-future03 | \
 	fsl,lx2160a-rdb-sdboot)
 		platform_do_upgrade_sdboot "$1"
 		return 0

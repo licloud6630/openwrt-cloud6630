@@ -4,7 +4,7 @@
 BOOTPART=/dev/mmcblk0p1
 
 move_config() {
-	local board=$(board_name)
+	local board=$(cat /tmp/sysinfo/board_name)
 
 	case "$board" in
 	fsl,ls1012a-frwy-sdboot | \
@@ -14,6 +14,11 @@ move_config() {
 	fsl,ls1043a-rdb-sdboot | \
 	fsl,ls1046a-frwy-sdboot | \
 	fsl,ls1046a-rdb-sdboot | \
+	fsl,ls1012a-ag101a | \
+	fsl,ls1043a-ag1002at | \
+	fsl,ls1043a-ag1002a | \
+	fsl,ls1043a-ag104a | \
+	fsl,ls1043a-future03 | \
 	fsl,ls1088a-rdb-sdboot)
 		if [ -b $BOOTPART ]; then
 			mkdir -p /boot

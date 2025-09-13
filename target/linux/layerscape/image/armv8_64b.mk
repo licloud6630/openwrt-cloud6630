@@ -73,6 +73,24 @@ define Device/fsl_ls1012a-rdb
 endef
 TARGET_DEVICES += fsl_ls1012a-rdb
 
+define Device/fsl_ls1012a-ag101a
+  $(Device/rework-sdcard-images)
+  $(Device/fsl-sdboot)
+  DEVICE_VENDOR := NXP
+  DEVICE_MODEL := AG101A-LS1012A
+  DEVICE_PACKAGES += \
+    layerscape-ppfe \
+    ~trusted-firmware-a-ls1012a-frwy-sdboot \
+    kmod-ppfe
+  DEVICE_DTS := fsl-ls1012a-ag101a
+  IMAGE/sdcard.img.gz := \
+    ls-clean | \
+    ls-append-sdhead $(1) | pad-to 16M | \
+    ls-append-kernel | pad-to $(LS_SD_ROOTFSPART_OFFSET)M | \
+    append-rootfs | pad-to $(LS_SD_IMAGE_SIZE)M | gzip
+endef
+TARGET_DEVICES += fsl_ls1012a-ag101a
+
 define Device/fsl_ls1012a-frwy-sdboot
   $(Device/rework-sdcard-images)
   $(Device/fsl-sdboot)
@@ -167,6 +185,90 @@ define Device/fsl_ls1043a-rdb
     append-rootfs | pad-rootfs | check-size
 endef
 TARGET_DEVICES += fsl_ls1043a-rdb
+
+define Device/fsl_ls1043a-ag104a
+  $(Device/rework-sdcard-images)
+  $(Device/fsl-sdboot)
+  DEVICE_VENDOR := NXP
+  DEVICE_MODEL := LS1043A-AG104A
+  DEVICE_VARIANT := SD Card Boot
+  DEVICE_PACKAGES += \
+    ~layerscape-fman \
+    ~trusted-firmware-a-ls1043a-rdb-sdboot \
+    kmod-ahci-qoriq \
+    kmod-hwmon-ina2xx \
+    kmod-hwmon-lm90
+  DEVICE_DTS := fsl-ls1043a-ag104a
+  IMAGE/sdcard.img.gz := \
+    ls-clean | \
+    ls-append-sdhead $(1) | pad-to 16M | \
+    ls-append-kernel | pad-to $(LS_SD_ROOTFSPART_OFFSET)M | \
+    append-rootfs | pad-to $(LS_SD_IMAGE_SIZE)M | gzip
+endef
+TARGET_DEVICES += fsl_ls1043a-ag104a
+
+define Device/fsl_ls1043a-ag1002at
+  $(Device/rework-sdcard-images)
+  $(Device/fsl-sdboot)
+  DEVICE_VENDOR := NXP
+  DEVICE_MODEL := LS1043A-AG1002AT
+  DEVICE_VARIANT := SD Card Boot
+  DEVICE_PACKAGES += \
+    ~layerscape-fman \
+    ~trusted-firmware-a-ls1043a-rdb-sdboot \
+    kmod-ahci-qoriq \
+    kmod-hwmon-ina2xx \
+    kmod-hwmon-lm90
+  DEVICE_DTS := fsl-ls1043a-ag1002at
+  IMAGE/sdcard.img.gz := \
+    ls-clean | \
+    ls-append-sdhead $(1) | pad-to 16M | \
+    ls-append-kernel | pad-to $(LS_SD_ROOTFSPART_OFFSET)M | \
+    append-rootfs | pad-to $(LS_SD_IMAGE_SIZE)M | gzip
+endef
+TARGET_DEVICES += fsl_ls1043a-ag1002at
+
+define Device/fsl_ls1043a-ag1002a
+  $(Device/rework-sdcard-images)
+  $(Device/fsl-sdboot)
+  DEVICE_VENDOR := NXP
+  DEVICE_MODEL := LS1043A-AG1002A
+  DEVICE_VARIANT := SD Card Boot
+  DEVICE_PACKAGES += \
+    ~layerscape-fman \
+    ~trusted-firmware-a-ls1043a-rdb-sdboot \
+    kmod-ahci-qoriq \
+    kmod-hwmon-ina2xx \
+    kmod-hwmon-lm90
+  DEVICE_DTS := fsl-ls1043a-ag1002a
+  IMAGE/sdcard.img.gz := \
+    ls-clean | \
+    ls-append-sdhead $(1) | pad-to 16M | \
+    ls-append-kernel | pad-to $(LS_SD_ROOTFSPART_OFFSET)M | \
+    append-rootfs | pad-to $(LS_SD_IMAGE_SIZE)M | gzip
+endef
+TARGET_DEVICES += fsl_ls1043a-ag1002a
+
+define Device/fsl_ls1043a-future03
+  $(Device/rework-sdcard-images)
+  $(Device/fsl-sdboot)
+  DEVICE_VENDOR := NXP
+  DEVICE_MODEL := LS1043A-FUTURE03
+  DEVICE_VARIANT := SD Card Boot
+  DEVICE_PACKAGES += \
+    ~layerscape-fman \
+    ~trusted-firmware-a-ls1043a-rdb-sdboot \
+    kmod-ahci-qoriq \
+    kmod-hwmon-ina2xx \
+    kmod-hwmon-lm90
+  DEVICE_DTS := fsl-ls1043a-future03
+  IMAGE/sdcard.img.gz := \
+    ls-clean | \
+    ls-append-sdhead $(1) | pad-to 16M | \
+    ls-append-kernel | pad-to $(LS_SD_ROOTFSPART_OFFSET)M | \
+    append-rootfs | pad-to $(LS_SD_IMAGE_SIZE)M | gzip
+endef
+TARGET_DEVICES += fsl_ls1043a-future03
 
 define Device/fsl_ls1043a-rdb-sdboot
   $(Device/rework-sdcard-images)

@@ -13,6 +13,18 @@ case "$(board_name)" in
 		ucidef_set_interface_lan "eth0 eth1 eth2 eth3"
 		ucidef_set_interface_wan "eth6"
 		;;
+	fsl,ls1012a-ag101a)
+		ucidef_set_interface_lan "eth1 phy0-ap0"
+		ucidef_set_interface_wan "eth0"
+		;;
+	fsl,ls1043a-ag1002at | fsl,ls1043a-ag104a | fsl,ls1043a-ag1002a)
+		ucidef_set_interface_lan "eth1 eth2 eth3 eth4 phy0-ap0"
+		ucidef_set_interface_wan "eth0"
+		;;
+	fsl,ls1043a-future03)
+		ucidef_set_interface_lan "eth1 eth2 eth3 eth4 eth5 phy0-ap0"
+		ucidef_set_interface_wan "eth0"
+		;;
 esac
 
 board_config_flush

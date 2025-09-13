@@ -13,6 +13,12 @@ traverse,ten64)
 	ucidef_set_led_netdev "sfp1" "SFP 1" "ten64:green:sfp1:down" "eth8" "link tx rx"
 	ucidef_set_led_netdev "sfp2" "SFP 2" "ten64:green:sfp2:up" "eth9" "link tx rx"
 	;;
+fsl,ls1012a-ag101a | \
+fsl,ls1043a-ag1002at | \
+fsl,ls1043a-ag1002a | \
+fsl,ls1043a-ag104a)
+	ucidef_set_led_netdev "wifi24" "wifi" "wifi" "phy0-ap0" "link tx rx"
+	;;
 esac
 
 board_config_flush

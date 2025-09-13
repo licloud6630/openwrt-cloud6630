@@ -4,7 +4,7 @@ do_sysinfo_layerscape_fixup() {
 	cmdline=$(strings /proc/cmdline)
 	case "${cmdline}" in
 		*root=/dev/mmcblk*)
-			board="$(strings /tmp/sysinfo/board_name)-sdboot"
+			board="$(strings /tmp/sysinfo/board_name)"
 			echo ${board} > /tmp/sysinfo/board_name
 		;;
 	esac
