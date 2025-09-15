@@ -25,11 +25,6 @@ setup_interface() {
 			route add default gw $i dev $interface
 			valid_gw="${valid_gw:+$valid_gw|}$i"
 		done
-		
-		eval $(route -n | awk '
-			/^0.0.0.0\W{9}('$valid_gw')\W/ {next}
-			/^0.0.0.0/ {print "route del -net "$1" gw "$2";"}
-		')
 	}
 
 	# CIDR STATIC ROUTES (rfc3442)
