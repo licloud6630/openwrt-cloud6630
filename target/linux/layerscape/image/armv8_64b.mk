@@ -239,7 +239,8 @@ define Device/fsl_ls1043a-ag1002a
     ~trusted-firmware-a-ls1043a-rdb-sdboot \
     kmod-ahci-qoriq \
     kmod-hwmon-ina2xx \
-    kmod-hwmon-lm90
+    kmod-hwmon-lm90 \
+    kmod-phy-marvell
   DEVICE_DTS := fsl-ls1043a-ag1002a
   IMAGE/sdcard.img.gz := \
     ls-clean | \
@@ -260,7 +261,8 @@ define Device/fsl_ls1043a-future03
     ~trusted-firmware-a-ls1043a-rdb-sdboot \
     kmod-ahci-qoriq \
     kmod-hwmon-ina2xx \
-    kmod-hwmon-lm90
+    kmod-hwmon-lm90 \
+    kmod-phy-marvell
   DEVICE_DTS := fsl-ls1043a-future03
   IMAGE/sdcard.img.gz := \
     ls-clean | \
