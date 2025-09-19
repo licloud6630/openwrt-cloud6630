@@ -125,7 +125,7 @@
 &keys{
 	reset {
 		label = "reset";
-		gpios = <&gpio1 10 1>;
+		gpios = <&gpio2 10 1>;
 		linux,code = <0x198>;
 	};
 };
