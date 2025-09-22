@@ -1,0 +1,97 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=40
+
+boot() {
+    #first, close mwan
+    if [ -e "/etc/init.d/mwan3" ]; then
+        MWAN_STATUS=$(/etc/init.d/mwan3 status)
+        if [ "$MWAN_STATUS" != "inactive" ]; then 
+            /etc/init.d/mwan3 stop
+            /etc/init.d/mwan3 disable
+        fi
+    fi
+
+	# STEP 2. Set lte/5g 
+
+	quectel_board=$(lsusb | grep -i "2c7c:0125")
+	fibocom_board=$(lsusb | grep -i "1508:1001")
+    fibocom_fm150=$(lsusb | grep -i "2cb7:0104")
+
+	if [ -z "$quectel_board" ] && [ -z "$fibocom_board" ] && [ -z "$fibocom_fm150" ]; then
+		echo "No quectel or fibocom found..." # do noting
+    else
+        echo "Find Quectel EC20 Or NL668 Or FM150/160,will use quectel qmi..."
+        #Start LTE/5G CSQ Monitor.
+        /usr/sbin/lte_5g_csq.sh > /dev/null &
+        #QMI
+        WAN2PROTO=$(uci get network.wan2.proto)
+        WAN2DEVICE=$(uci get network.wan2.device)
+        # if already exist, do nothing...
+        if [ "$WAN2PROTO" != "quectel" ] || [ "$WAN2DEVICE" != "/dev/cdc-wdm0" ]; then
+            uci delete network.wan2
+            uci set network.wan2=interface
+            uci set network.wan2.proto='quectel'
+            uci set network.wan2.device='/dev/cdc-wdm0'
+            uci set network.wan2.auth='none'
+            uci set network.wan2.pdptype='ipv4v6'
+            uci set network.wan2.timeout='15'
+            uci set network.wan2.maxwait='20'
+            uci set network.wan2.delay='2'
+            uci set network.wan2.retry='3'
+            uci set network.wan2.metric='5'
+            # set wan as metric is 10
+            uci set network.wan.metric='10'
+            uci commit network && sleep 1
+
+            /etc/init.d/network restart
+
+            uci del_list firewall.@zone[1].network="wan2"
+            uci add_list firewall.@zone[1].network="wan2"
+            uci commit firewall && sleep 1
+            /etc/init.d/firewall restart
+
+            # first set 3ginfo device
+            MODEMINFO=$(uci get 3ginfo.@3ginfo[0].device)
+            if [ "$MODEMINFO" != "/dev/ttyUSB2" ]; then
+                uci set 3ginfo.@3ginfo[0].device=/dev/ttyUSB2
+                uci commit 3ginfo
+            fi
+        fi
+    fi
+
+    quectel_rm500u=$(lsusb | grep -i "2c7c:0900")
+    if [ -z "$quectel_rm500u" ]; then
+		echo "No quectel or fibocom found..." # do noting
+    else
+        echo "Find Quectel RM500U,will usb quectel rndis..."
+        /usr/sbin/lte_5g_csq.sh > /dev/null &
+        #Start LTE/5G CSQ Monitor.
+        WAN2PROTO=$(uci get network.wan2.proto)
+        WAN2DEVICE=$(uci get network.wan2.device)
+        # if already exist, do nothing...
+        if [ "$WAN2PROTO" != "dhcp" ] || [ "$WAN2DEVICE" != "usb0" ]; then
+        #RNDIS
+            uci delete network.wan2
+            uci set network.wan2=interface
+            uci set network.wan2.proto='dhcp'
+            uci set network.wan2.device='usb0'
+            uci set network.wan2.timeout='15'
+            uci set network.wan2.maxwait='20'
+            uci set network.wan2.delay='2'
+            uci set network.wan2.retry='3'
+            uci set network.wan2.metric='5'
+
+            uci set network.wan.metric='10'
+            uci commit network && sleep 5
+
+            /etc/init.d/network restart
+
+            uci del_list firewall.@zone[1].network="wan2"
+            uci add_list firewall.@zone[1].network="wan2"
+            uci commit firewall && sleep 1
+            /etc/init.d/firewall restart
+        fi
+    fi
+}

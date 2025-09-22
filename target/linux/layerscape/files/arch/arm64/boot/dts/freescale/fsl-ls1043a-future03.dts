@@ -249,10 +249,12 @@
 	mdio@fc000 {
 		rgmii_phy1: ethernet-phy@1 {
 			reg = <0x1>;
+			realtek,fiber;
 		};
 
 		rgmii_phy2: ethernet-phy@3 {
 			reg = <0x3>;
+			realtek,fiber;
 		};
 	};
 
