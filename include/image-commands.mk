@@ -380,7 +380,7 @@ define Build/fit
 			$(if $(findstring 11,$(if $(DEVICE_DTS_OVERLAY),1)$(if $(findstring $(KERNEL_BUILD_DIR)/image-,$(word 2,$(1))),,1)), \
 				-d $(KERNEL_BUILD_DIR)/image-$$(basename $(word 2,$(1))), \
 				-d $(word 2,$(1)))) \
-		$(if $(findstring with-rootfs,$(word 3,$(1))),-r $(IMAGE_ROOTFS)) \
+		$(if $(findstring with-rootfs,$(word 3,$(1))),$(if $(CONFIG_MTK_FW_ENC_USE_RAMDISK),-i,-r) $(IMAGE_ROOTFS)) \
 		$(if $(findstring with-initrd,$(word 3,$(1))), \
 			$(if $(CONFIG_TARGET_ROOTFS_INITRAMFS_SEPARATE), \
 				-i $(KERNEL_BUILD_DIR)/initrd$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))).cpio$(strip $(call Build/initrd_compression)))) \
@@ -390,10 +390,15 @@ define Build/fit
 		$(if $(DEVICE_DTS_LOADADDR),-s $(DEVICE_DTS_LOADADDR)) \
 		$(if $(DEVICE_DTS_OVERLAY),$(foreach dtso,$(DEVICE_DTS_OVERLAY), -O $(dtso):$(KERNEL_BUILD_DIR)/image-$(dtso).dtbo)) \
 		-c $(if $(DEVICE_DTS_CONFIG),$(DEVICE_DTS_CONFIG),"config-1") \
-		-A $(LINUX_KARCH) -v $(LINUX_VERSION), gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))))
+		-A $(LINUX_KARCH) -v $(LINUX_VERSION) \
+		$(if $(CONFIG_MTK_SECURE_BOOT),-b $(CONFIG_FIT_SIGN_ALG) -S $(call qstrip,$(CONFIG_FIT_SIGN_KEY_NAME))) \
+		$(if $(CONFIG_MTK_FW_ENC),-B $(CONFIG_FW_ENC_ALG)) \
+		$(if $(CONFIG_MTK_ANTI_ROLLBACK),-R $(call Image/get_fw_ar_ver)),
+		gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))))
 	$(call locked,PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage $(if $(findstring external,$(word 3,$(1))),\
-		-E -B 0x1000 $(if $(findstring static,$(word 3,$(1))),-p 0x1000)) -f $@.its $@.new, \
-	  gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))))
+		-E -B 0x1000 $(if $(findstring static,$(word 3,$(1))),-p 0x1000)) \
+		$(if $(CONFIG_MTK_SECURE_BOOT),-o $(CONFIG_FIT_SIGN_ALG) -k $(TOPDIR)/$(call qstrip,$(CONFIG_SBC_KEY_DIR))) -f $@.its $@.new, \
+	 	gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))))
 	@mv $@.new $@
 endef
 
