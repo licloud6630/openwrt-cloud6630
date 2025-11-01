@@ -291,7 +291,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4" wan
 		;;
 	mediatek,mt7981-emmc-r180)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 " eth1
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" eth1
 		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
@@ -367,8 +367,8 @@ mediatek_setup_macs()
 		label_mac=$(mtd_get_mac_binary "Factory" 0x4)
 		;;
 	mediatek,mt7981-emmc-r180)
-		lan_mac=$(mmc_get_mac_binary Factory 0x2A)
-		wan_mac=$(mmc_get_mac_binary Factory 0x24)
+		lan_mac=$(mmc_get_mac_binary "Factory" 0x2A)
+		wan_mac=$(mmc_get_mac_binary "Factory" 0x24)
 		;;
 	esac
 
