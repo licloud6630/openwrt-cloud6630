@@ -1,0 +1,38 @@
+From 5fd9195477e77ec61a18cd56f1cb98b5a426ff70 Mon Sep 17 00:00:00 2001
+From: liji <liji6630@foxmail.com>
+Date: Tue, 23 Sep 2025 19:19:54 +0800
+Subject: [PATCH] ...
+
+---
+ pinctrl-mt7981.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mt7981.c b/drivers/pinctrl/mediatek/pinctrl-mt7981.c
+index 4f0f145..04b1934 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mt7981.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mt7981.c
+@@ -609,8 +609,8 @@ static int mt7981_wo0_jtag_1_pins[] = { 25, 26, 27, 28, 29, };
+ static int mt7981_wo0_jtag_1_funcs[] = { 5, 5, 5, 5, 5, };
+ 
+ /* UART2 */
+-static int mt7981_uart2_0_pins[] = { 4, 5, 6, 7, };
+-static int mt7981_uart2_0_funcs[] = { 3, 3, 3, 3, };
++static int mt7981_uart2_0_pins[] = { 4, 5, };
++static int mt7981_uart2_0_funcs[] = { 3, 3, };
+ 
+ /* GBE_LED0 */
+ static int mt7981_gbe_led0_pins[] = { 8, };
+@@ -729,8 +729,8 @@ static int mt7981_spi2_wp_hold_funcs[] = { 1, 1, };
+ static int mt7981_uart1_0_pins[] = { 16, 17, 18, 19, };
+ static int mt7981_uart1_0_funcs[] = { 4, 4, 4, 4, };
+ 
+-static int mt7981_uart1_1_pins[] = { 26, 27, 28, 29, };
+-static int mt7981_uart1_1_funcs[] = { 2, 2, 2, 2, };
++static int mt7981_uart1_1_pins[] = { 26, 27,  };
++static int mt7981_uart1_1_funcs[] = { 2, 2, };
+ 
+ /* UART2 */
+ static int mt7981_uart2_1_pins[] = { 22, 23, 24, 25, };
+-- 
+2.25.1
+

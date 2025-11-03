@@ -81,11 +81,25 @@ _get_overlay_partition_default()
 		# we are in mount_root if /rom/note exists
 		cat "/sys/block/$bootdisk/uevent" > /tmp/.bootdisk
 	fi
-	local overlay_dev="`_getpartofdisk $bootdisk 3`"
-	[ -z "$overlay_dev" ] && {
-		log "getpartofdisk $bootdisk 3 failed"
-		return 1
-	}
+
+	local board=$(cat /tmp/sysinfo/board_name)
+	case $board in
+	mediatek,mt7981-emmc-r180)
+		local overlay_dev="`_getpartofdisk $bootdisk 8`"
+		[ -z "$overlay_dev" ] && {
+			log "getpartofdisk $bootdisk 8 failed"
+			return 1
+		}
+		;;
+	*)
+		local overlay_dev="`_getpartofdisk $bootdisk 3`"
+		[ -z "$overlay_dev" ] && {
+			log "getpartofdisk $bootdisk 3 failed"
+			return 1
+		}
+		;;
+	esac
+
 	OVERLAY_DEV="/dev/$overlay_dev"
 	return 0
 }
