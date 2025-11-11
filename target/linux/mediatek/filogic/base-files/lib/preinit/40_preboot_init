@@ -1,0 +1,27 @@
+. /lib/functions.sh
+. /lib/upgrade/common.sh
+
+device_set_overlayfs_part(){
+	if [ -e "/dev/mmcblk0p8" ]; then
+		return 1
+	fi
+
+	local part7end=$(fdisk -l $tar_file | grep $tar_file"p7" | awk '{print substr($3, index($2, $3))}')
+	local part8start=$(expr $part7end + 15360)
+	echo "start part...."
+	echo -ne "n\np\n8\n$part8start\n\nw\n" | fdisk /dev/mmcblk0
+	sleep 3
+	reboot
+}
+
+overlayfs_init() {
+	local board=$(cat /tmp/sysinfo/board_name)
+
+	case "$board" in
+	mediatek,mt7981-emmc-r180)
+		device_set_overlayfs_part
+		;;
+	esac
+}
+
+boot_hook_add preinit_mount_root overlayfs_init

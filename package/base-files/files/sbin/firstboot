@@ -25,7 +25,7 @@ confirm()
   [ "$1" = "y" ] && return 0
   echo "This will erase all settings and remove any installed packages. Are you sure? [N/y]"
   read CONFIRM
-  [ "$CONFIRM" = "y" -o "$CONFIRM" = "Y" ] && return 0
+  [ "$CONFIRM" = "y" -o "$CONFIRM" = "Y" ] && rm -rf /overlay/* && return 0
   return 1
 }
 
