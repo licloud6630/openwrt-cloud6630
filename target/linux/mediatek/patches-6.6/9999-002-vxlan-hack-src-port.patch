@@ -1,0 +1,90 @@
+From 7c55993174b423c8ea13f14651be0ff7f3655fcc Mon Sep 17 00:00:00 2001
+From: liji <liji6630@foxmail.com>
+Date: Tue, 11 Nov 2025 15:24:02 +0800
+Subject: [PATCH] vxlan hack src port
+
+---
+ drivers/net/vxlan/vxlan_core.c | 60 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 58 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index 1b6b6ac..e159c51 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -49,6 +49,18 @@ static unsigned short vxlan_port __read_mostly = 8472;
+ module_param_named(udp_port, vxlan_port, ushort, 0444);
+ MODULE_PARM_DESC(udp_port, "Destination UDP port");
+ 
++static unsigned int vxlan_src_port_mask __read_mostly = 0x001C0000; /* Default: bits 19,20,21 (0-indexed for 0x1C0000) */
++module_param_named(src_port_mask, vxlan_src_port_mask, uint, 0644);
++MODULE_PARM_DESC(src_port_mask, "Mask for skb->mark to select source port range (must be 3 consecutive bits, e.g., 0x1C0000)");
++
++static unsigned short vxlan_src_port_base __read_mostly = 55000;
++module_param_named(src_port_base, vxlan_src_port_base, ushort, 0644);
++MODULE_PARM_DESC(src_port_base, "Base UDP source port for custom ranges (1-65535)");
++
++static unsigned short vxlan_src_port_step __read_mostly = 10;
++module_param_named(src_port_step, vxlan_src_port_step, ushort, 0644);
++MODULE_PARM_DESC(src_port_step, "Step for UDP source port ranges (size of each range, >0)");
++
+ static bool log_ecn_error = true;
+ module_param(log_ecn_error, bool, 0644);
+ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
+@@ -2532,8 +2544,52 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ #endif
+ 		udp_sum = !!(info->key.tun_flags & TUNNEL_CSUM);
+ 	}
+-	src_port = udp_flow_src_port(dev_net(dev), skb, vxlan->cfg.port_min,
+-				     vxlan->cfg.port_max, true);
++	/* Calculate VXLAN source port based on skb->mark and module parameters */
++	if (vxlan_src_port_mask != 0 && vxlan_src_port_step > 0 && vxlan_src_port_base > 0) {
++		unsigned int skb_mark = skb->mark;
++		/* __ffs returns 1 + (0-indexed position of LSB), or 0 if mask is 0.
++		 * So, shift is the 0-indexed position of the LSB.
++		 */
++		int shift = __ffs(vxlan_src_port_mask); /* 0-indexed shift */
++		unsigned int index;
++
++		if (shift >= 0 && (vxlan_src_port_mask >> shift) == 0x7 ) { /* Ensure mask is 3 consecutive bits and LSB found */
++			index = (skb_mark & vxlan_src_port_mask) >> shift;
++
++			/* index 0 uses default logic.
++			 * Index 1-7 for custom ranges.
++			 */
++			if (index >= 1 && index <= 7) {
++				__u16 min_p, max_p;
++				u32 calc_min_p, calc_max_p;
++
++				calc_min_p = (u32)vxlan_src_port_base + (index - 1) * vxlan_src_port_step;
++				calc_max_p = (u32)vxlan_src_port_base + index * vxlan_src_port_step -1;
++
++				/* Clamp to valid __u16 port range (1-65535) */
++				min_p = (calc_min_p < 1) ? 1 : ((calc_min_p > 65535) ? 65535 : (__u16)calc_min_p);
++				max_p = (calc_max_p < 1) ? 1 : ((calc_max_p > 65535) ? 65535 : (__u16)calc_max_p);
++
++				/* Ensure max_p is not less than min_p after clamping and calculations */
++				if (max_p < min_p)
++					max_p = min_p;
++
++				src_port = udp_flow_src_port(dev_net(dev), skb,
++										 min_p, max_p, true);
++			} else {
++				src_port = udp_flow_src_port(dev_net(dev), skb,
++										 vxlan->cfg.port_min,
++									 vxlan->cfg.port_max, true);
++			}
++		} else {
++			src_port = udp_flow_src_port(dev_net(dev), skb,
++								 vxlan->cfg.port_min,
++								 vxlan->cfg.port_max, true);
++		}
++	} else {
++		src_port = udp_flow_src_port(dev_net(dev), skb, vxlan->cfg.port_min,
++								 vxlan->cfg.port_max, true);
++	}
+ 
+ 	rcu_read_lock();
+ 	if (dst->sa.sa_family == AF_INET) {
+-- 
+2.25.1
+
