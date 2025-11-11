@@ -123,7 +123,9 @@ generate_network() {
 					set network.@device[-1].name='$port'
 					set network.@device[-1].macaddr='$macaddr'
 				EOF
-				macaddr=$(macaddr_add "$macaddr" 2)
+#				macaddr=$(macaddr_add "$macaddr" 2)
+#				no need increse
+				macaddr=$(macaddr_add "$macaddr" 0)
 			done
 		}
 		device=br-$1

@@ -1,0 +1,32 @@
+From 18c11f036b9e510c6c798a0f0120b1cc50e80d4f Mon Sep 17 00:00:00 2001
+From: liji <liji6630@foxmail.com>
+Date: Tue, 11 Nov 2025 12:23:20 +0800
+Subject: [PATCH] remove usbnet eth or wwan,use usbx instead
+
+---
+ drivers/net/usb/usbnet.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index fd6b586..c77198a 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1783,15 +1783,9 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 		/* heuristic: rename to "eth%d" if we are not sure this link
+ 		 * is two-host (these links keep "usb%d")
+ 		 */
+-		if ((dev->driver_info->flags & FLAG_ETHER) != 0 &&
+-		    !usbnet_needs_usb_name_format(dev, net))
+-			strscpy(net->name, "eth%d", sizeof(net->name));
+ 		/* WLAN devices should always be named "wlan%d" */
+ 		if ((dev->driver_info->flags & FLAG_WLAN) != 0)
+ 			strscpy(net->name, "wlan%d", sizeof(net->name));
+-		/* WWAN devices should always be named "wwan%d" */
+-		if ((dev->driver_info->flags & FLAG_WWAN) != 0)
+-			strscpy(net->name, "wwan%d", sizeof(net->name));
+ 
+ 		/* devices that cannot do ARP */
+ 		if ((dev->driver_info->flags & FLAG_NOARP) != 0)
+-- 
+2.25.1
+
