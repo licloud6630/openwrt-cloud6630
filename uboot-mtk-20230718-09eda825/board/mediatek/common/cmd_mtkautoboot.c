@@ -12,11 +12,35 @@
 #include <stdio.h>
 #include <vsprintf.h>
 #include <linux/types.h>
+#include <linux/delay.h>
+#include <asm/gpio.h>
 
 #include "autoboot_helper.h"
 
 static const struct bootmenu_entry *menu_entries;
 static u32 menu_count;
+
+static int failsafe_boot_in_uboot()
+{
+       int value, value_old, value_new;
+       gpio_request(1, "reset");
+       value_old = gpio_get_value(1);
+       mdelay(2000);
+       value_new = gpio_get_value(1);
+
+       value = value_new + value_old;
+       if(value == 0)
+       {
+			printf("reset button is pressed in uboot\n");
+			mdelay(500);
+			printf("try to boot from http server\n");
+			mdelay(500);
+            run_command("httpd", 0);
+            return 0;
+       }
+       else
+            return 0;
+}      
 
 static int do_mtkautoboot(struct cmd_tbl *cmdtp, int flag, int argc,
 			  char *const argv[])
@@ -29,6 +53,9 @@ static int do_mtkautoboot(struct cmd_tbl *cmdtp, int flag, int argc,
 #ifdef CONFIG_MEDIATEK_BOOTMENU_COUNTDOWN
 	const char *delay_str;
 #endif
+
+	/* First check if reset button is pressed in uboot */
+	failsafe_boot_in_uboot();
 
 	board_bootmenu_entries(&menu_entries, &menu_count);
 

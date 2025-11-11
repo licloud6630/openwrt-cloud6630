@@ -35,6 +35,15 @@
 	bl2_verify {
 		bl2_compatible = "emmc";
 	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		reset-button {
+			label = "reset";
+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
+		};
+	};
 };
 
 &uart0 {
