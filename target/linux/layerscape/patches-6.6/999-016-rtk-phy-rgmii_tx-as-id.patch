@@ -1,0 +1,26 @@
+From 6f8668e9f3c8a65b3a5f8aa796e11c3f8088a9bc Mon Sep 17 00:00:00 2001
+From: liji <liji6630@foxmail.com>
+Date: Sat, 27 Sep 2025 03:08:00 +0000
+Subject: [PATCH] ...
+
+---
+ realtek_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/realtek_main.c b/realtek_main.c
+index 30de43c..9ec0260 100644
+--- a/drivers/net/phy/realtek/realtek_main.c
++++ b/drivers/net/phy/realtek/realtek_main.c
+@@ -542,10 +542,6 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 		break;
+ 
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		val_txdly = RTL8211F_TX_DELAY;
+-		val_rxdly = 0;
+-		break;
+-
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 		val_txdly = RTL8211F_TX_DELAY;
+ 		val_rxdly = RTL8211F_RX_DELAY;
+-- 
+2.34.1
